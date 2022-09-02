@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -53,33 +54,45 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Column(children: [
-        TextField(
-          controller: email,
-          keyboardType: TextInputType.emailAddress,
-          decoration: const InputDecoration(hintText: 'Enter your email here'),
+      // future builder delays the building of a widget until the future task is accomplished
+      body: FutureBuilder(
+        future: Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
         ),
-        TextField(
-          controller: password,
-          obscureText: true,
-          autocorrect: false,
-          enableSuggestions: false,
-          decoration:
-              const InputDecoration(hintText: 'Enter your password here'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            await Firebase.initializeApp(
-              options: DefaultFirebaseOptions.currentPlatform,
-            );
-            final usercredential = await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(
-                    email: email.text, password: password.text);
-            print(usercredential);
-          },
-          child: const Text('Register'),
-        ),
-      ]),
+        //nsnapshot has the states of the future task
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.done:
+              return Column(children: [
+                TextField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration:
+                      const InputDecoration(hintText: 'Enter your email here'),
+                ),
+                TextField(
+                  controller: password,
+                  obscureText: true,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  decoration: const InputDecoration(
+                      hintText: 'Enter your password here'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final usercredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                            email: email.text, password: password.text);
+                    print(usercredential);
+                  },
+                  child: const Text('Register'),
+                ),
+              ]);
+            default:
+              return const Text('Loading..');
+          }
+        },
+      ),
     );
   }
 }
