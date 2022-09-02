@@ -1,4 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +22,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late final TextEditingController email;
+  late final TextEditingController password;
+
+  @override
+  void initState() {
+    email = TextEditingController();
+    password = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +53,33 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => {},
+      body: Column(children: [
+        TextField(
+          controller: email,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(hintText: 'Enter your email here'),
+        ),
+        TextField(
+          controller: password,
+          obscureText: true,
+          autocorrect: false,
+          enableSuggestions: false,
+          decoration:
+              const InputDecoration(hintText: 'Enter your password here'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await Firebase.initializeApp(
+              options: DefaultFirebaseOptions.currentPlatform,
+            );
+            final usercredential = await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+                    email: email.text, password: password.text);
+            print(usercredential);
+          },
           child: const Text('Register'),
         ),
-      ),
+      ]),
     );
   }
 }
