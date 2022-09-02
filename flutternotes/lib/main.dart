@@ -29,7 +29,7 @@ class MyHomePage extends StatelessWidget {
         title: const Text('Register'),
       ),
       body: Center(
-        child: TextButton(
+        child: ElevatedButton(
           onPressed: () => {},
           child: const Text('Register'),
         ),
