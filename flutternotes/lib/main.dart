@@ -81,10 +81,20 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final usercredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                            email: email.text, password: password.text);
-                    print(usercredential);
+                    try {
+                      final usercredential = await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                              email: email.text, password: password.text);
+                      print(usercredential);
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        print('Weak Password');
+                      } else if (e.code == 'email-already-in-use') {
+                        print('Email already in use');
+                      } else if (e.code == 'invalid-email') {
+                        print('Invalid Email');
+                      }
+                    }
                   },
                   child: const Text('Register'),
                 ),

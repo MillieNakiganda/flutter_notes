@@ -68,7 +68,13 @@ class _LoginViewState extends State<LoginView> {
                       print(usercredential);
                     } on FirebaseAuthException catch (e) {
                       //catching specific exceptions
-                      print(e.code);
+                      if (e.code == 'user-not-found') {
+                        print('User not found');
+                      } else {
+                        if (e.code == 'wrong-password') {
+                          print('Wrong Password');
+                        }
+                      }
                     } catch (ex) {
                       print('something bad happened');
                       print(ex.runtimeType);
