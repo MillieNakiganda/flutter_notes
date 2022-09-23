@@ -31,43 +31,53 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      TextField(
-        controller: email,
-        keyboardType: TextInputType.emailAddress,
-        decoration: const InputDecoration(hintText: 'Enter your email here'),
-      ),
-      TextField(
-        controller: password,
-        obscureText: true,
-        autocorrect: false,
-        enableSuggestions: false,
-        decoration: const InputDecoration(hintText: 'Enter your password here'),
-      ),
-      ElevatedButton(
-        onPressed: () async {
-          try {
-            final usercredential = await FirebaseAuth.instance
-                .signInWithEmailAndPassword(
-                    email: email.text, password: password.text);
-            print(usercredential);
-          } on FirebaseAuthException catch (e) {
-            //catching specific exceptions
-            if (e.code == 'user-not-found') {
-              print('User not found');
-            } else {
-              if (e.code == 'wrong-password') {
-                print('Wrong Password');
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Column(children: [
+        TextField(
+          controller: email,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(hintText: 'Enter your email here'),
+        ),
+        TextField(
+          controller: password,
+          obscureText: true,
+          autocorrect: false,
+          enableSuggestions: false,
+          decoration:
+              const InputDecoration(hintText: 'Enter your password here'),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            try {
+              final usercredential = await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(
+                      email: email.text, password: password.text);
+              print(usercredential);
+            } on FirebaseAuthException catch (e) {
+              //catching specific exceptions
+              if (e.code == 'user-not-found') {
+                print('User not found');
+              } else {
+                if (e.code == 'wrong-password') {
+                  print('Wrong Password');
+                }
               }
+            } catch (ex) {
+              print('something bad happened');
+              print(ex.runtimeType);
+              print(ex);
             }
-          } catch (ex) {
-            print('something bad happened');
-            print(ex.runtimeType);
-            print(ex);
-          }
-        },
-        child: const Text('Login'),
-      ),
-    ]);
+          },
+          child: const Text('Login'),
+        ),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/register/', (route) => false);
+            },
+            child: const Text('Not resgistered yet? Register here'))
+      ]),
+    );
   }
 }
