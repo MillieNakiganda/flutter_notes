@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutternotes/views/login_view.dart';
 import 'package:flutternotes/views/register_view.dart';
 import 'package:flutternotes/views/verify_email_view.dart';
-
+import 'dart:developer' as devtools show log;
 import 'firebase_options.dart';
 
 void main() {
@@ -64,6 +64,8 @@ class Homepage extends StatelessWidget {
   }
 }
 
+enum MenuAction { logout }
+
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
 
@@ -75,7 +77,19 @@ class _NotesViewState extends State<NotesView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Main UI')),
+      appBar: AppBar(
+        title: const Text('Main UI'),
+        actions: [
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) => {devtools.log(value.toString())},
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem(value: MenuAction.logout, child: Text('logout'))
+              ];
+            },
+          )
+        ],
+      ),
       body: const Text('hello World'),
     );
   }
