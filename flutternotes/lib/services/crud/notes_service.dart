@@ -12,13 +12,13 @@ import 'crud_crudexceptions.dart';
 //step: create fields exactly as in the tables to be used as params for DB User class
 //Note: we are to create maps for every row in a table
 
-class NoteService {
+class NotesService {
   Database? _db;
 
   //make NotesService singleton such that at all times, we have only one instance of it throughout the app
-  NoteService._sharedInstance();
-  static final NoteService _shared = NoteService._sharedInstance();
-  factory NoteService() => _shared;
+  NotesService._sharedInstance();
+  static final NotesService _shared = NotesService._sharedInstance();
+  factory NotesService() => _shared;
 
   final _notesStreamController =
       StreamController<List<DatabaseNote>>.broadcast();
