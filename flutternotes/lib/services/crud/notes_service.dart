@@ -15,6 +15,11 @@ import 'crud_crudexceptions.dart';
 class NoteService {
   Database? _db;
 
+  //make NotesService singleton such that at all times, we have only one instance of it throughout the app
+  NoteService._sharedInstance();
+  static final NoteService _shared = NoteService._sharedInstance();
+  factory NoteService() => _shared;
+
   final _notesStreamController =
       StreamController<List<DatabaseNote>>.broadcast();
 
