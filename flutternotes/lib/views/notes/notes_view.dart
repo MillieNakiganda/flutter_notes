@@ -22,11 +22,12 @@ class _NotesViewState extends State<NotesView> {
     super.initState();
   }
 
-  @override
+//since we are dealing with a singleton class that will be opne the entire time, its best we donot close the db on any widgets
+  /* @override
   void dispose() {
     _noteService.close();
     super.dispose();
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {

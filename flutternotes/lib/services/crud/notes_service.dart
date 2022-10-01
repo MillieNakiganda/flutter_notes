@@ -16,12 +16,19 @@ class NotesService {
   Database? _db;
 
   //make NotesService singleton such that at all times, we have only one instance of it throughout the app
-  NotesService._sharedInstance();
+
   static final NotesService _shared = NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    //such that any new listener is able to get the updates rather than just the old ones
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
