@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' show join;
@@ -18,6 +17,8 @@ class NoteService {
 
   final _notesStreamController =
       StreamController<List<DatabaseNote>>.broadcast();
+
+  Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
   //after registration and successfull login, we save user in our database
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
@@ -43,6 +44,7 @@ class NoteService {
 
   Future<DatabaseNote> updateNote(
       {required DatabaseNote note, required String text}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     await getNote(id: note.id);
     final updatesCount = await db
@@ -59,6 +61,7 @@ class NoteService {
   }
 
   Future<Iterable<DatabaseNote>> getAllNotes() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final notes = await db.query(noteTable);
 
@@ -66,6 +69,7 @@ class NoteService {
   }
 
   Future<DatabaseNote> getNote({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final notes = await db.query(
       noteTable,
@@ -86,6 +90,7 @@ class NoteService {
   }
 
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final dbUser = await getUser(email: owner.email);
 
@@ -112,6 +117,7 @@ class NoteService {
   }
 
   Future<void> deleteNote({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final deletedCount = await db.delete(
       noteTable,
@@ -127,6 +133,7 @@ class NoteService {
   }
 
   Future<int> deleteAllNotes() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final numberOfDeletions = await db.delete(noteTable);
     _notes = [];
@@ -135,6 +142,7 @@ class NoteService {
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final results = await db.query(
       userTable,
@@ -150,6 +158,7 @@ class NoteService {
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final results = await db.query(
       userTable,
@@ -168,6 +177,7 @@ class NoteService {
   }
 
   Future<void> deleteUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOThrow();
     final deletedCount = await db.delete(
       userTable,
@@ -186,6 +196,12 @@ class NoteService {
     } else {
       return db;
     }
+  }
+
+  Future<void> _ensureDbIsOpen() async {
+    try {
+      await open();
+    } on DatabaseAlreadyOpenExcpeyion {}
   }
 
   // we need an async to open the database
