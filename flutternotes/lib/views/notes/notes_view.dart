@@ -5,7 +5,7 @@ import 'package:flutternotes/views/notes/notes_list_view.dart';
 
 import '../../constants/routes.dart';
 import '../../enums/menu_action.dart';
-import '../../utilities/logout_dialog.dart';
+import '../../utilities/dialogs/logout_dialog.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({Key? key}) : super(key: key);
@@ -39,7 +39,7 @@ class _NotesViewState extends State<NotesView> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(newNoteRoute);
+                Navigator.of(context).pushNamed(createOrUpdateRoute);
               },
               icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
@@ -79,10 +79,16 @@ class _NotesViewState extends State<NotesView> {
                         if (snapshot.hasData) {
                           final allNotes = snapshot.data as List<DatabaseNote>;
                           return NoteListView(
-                              notes: allNotes,
-                              onDeleteNote: (note) async {
-                                await _noteService.deleteNote(id: note.id);
-                              });
+                            notes: allNotes,
+                            onDeleteNote: (note) async {
+                              await _noteService.deleteNote(id: note.id);
+                            },
+                            onTap: (note) {
+                              Navigator.of(context).pushNamed(
+                                  createOrUpdateRoute,
+                                  arguments: note);
+                            },
+                          );
                         } else {
                           return CircularProgressIndicator();
                         }
